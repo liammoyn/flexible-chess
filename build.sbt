@@ -1,4 +1,4 @@
-name := "blindchess"
+name := "flexible-chess"
 
 version := "0.1"
 
