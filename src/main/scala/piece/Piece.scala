@@ -1,17 +1,17 @@
 package piece
 
 import board.{BoardState, Coordinate}
+import piece.PieceType.PieceType
 import team.Team.Team
-import turn.{Action, InitiatingAction}
+import turn.InitiatingAction
 import util.PieceId
 
 import scala.collection.mutable.ListBuffer
 
-abstract class Piece(val id: PieceId, val team: Team, val hasMoved: Boolean) {
+// TODO: Ideally hasMoved would be a val but there is no way to update it then without type erasure
+abstract class Piece(val id: PieceId, val pieceType: PieceType, val team: Team, var hasMoved: Boolean) {
 
   def validMoves(at: Coordinate, currentBoard: BoardState): List[InitiatingAction]
-
-  def copyPiece(piece: Piece): this.type
 
   protected def directionList(cur: Coordinate, nextCoordinate: (Coordinate) => Coordinate, boardState: BoardState): ListBuffer[Coordinate] = {
     if (boardState.isEnemyAtCoordinate(cur, team)) {

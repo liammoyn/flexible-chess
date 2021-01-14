@@ -2,7 +2,7 @@ package gamerunner
 
 import board.BoardState
 import team.Team.Team
-import turn.{Action, InitiatingAction}
+import turn.InitiatingAction
 
 import scala.util.Random
 

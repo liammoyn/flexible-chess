@@ -1,11 +1,12 @@
 package piece
 import board.{BoardState, Coordinate}
+import piece.PieceType.{KNIGHT, PieceType}
 import team.Team.Team
-import turn.{Action, InitiatingAction}
-import turn.actions.Move
+import turn.InitiatingAction
+import turn.initiatingactions.Move
 import util.PieceId
 
-class Knight private (team: Team, hasMoved: Boolean, id: PieceId) extends Piece(id, team, hasMoved) {
+class Knight private(id: PieceId, pieceType: PieceType, team: Team, hasMoved: Boolean) extends Piece(id, pieceType, team, hasMoved) {
 
   override def validMoves(at: Coordinate, currentBoard: BoardState): List[InitiatingAction] = {
     List(
@@ -23,12 +24,15 @@ class Knight private (team: Team, hasMoved: Boolean, id: PieceId) extends Piece(
         Move(this, cord)
       })
   }
-
-  def move(): Knight = {
-    new Knight(this.team, true, this.id)
-  }
 }
 
 object Knight {
-  def apply(team: Team): Knight = new Knight(team, false, PieceId())
+  def apply(team: Team): Knight = new Knight(PieceId(), KNIGHT, team, false)
+
+  def apply(piece: Piece, samePiece: Boolean = true): Knight = new Knight(
+    if (samePiece) piece.id else PieceId(),
+    KNIGHT,
+    piece.team,
+    piece.hasMoved
+  )
 }

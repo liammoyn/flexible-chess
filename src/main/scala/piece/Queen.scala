@@ -1,14 +1,15 @@
 package piece
 
 import board.{BoardState, Coordinate}
+import piece.PieceType.{PieceType, QUEEN}
 import team.Team.Team
-import turn.{Action, InitiatingAction}
-import turn.actions.Move
+import turn.InitiatingAction
+import turn.initiatingactions.Move
 import util.PieceId
 
 import scala.collection.mutable.ListBuffer
 
-class Queen private (team: Team, hasMoved: Boolean, id: PieceId) extends Piece(id, team, hasMoved) {
+class Queen private(id: PieceId, pieceType: PieceType, team: Team, hasMoved: Boolean) extends Piece(id, pieceType, team, hasMoved) {
 
   override def validMoves(at: Coordinate, currentBoard: BoardState): List[InitiatingAction] = {
     val left: ListBuffer[Coordinate] = directionList(leftGen(at), leftGen, currentBoard)
@@ -25,12 +26,15 @@ class Queen private (team: Team, hasMoved: Boolean, id: PieceId) extends Piece(i
         Move(this, cord)
       })
   }
-
-  def move(): Queen = {
-    new Queen(this.team, true, this.id)
-  }
 }
 
 object Queen {
-  def apply(team: Team): Queen = new Queen(team, false, PieceId())
+  def apply(team: Team): Queen = new Queen(PieceId(), QUEEN, team, false)
+
+  def apply(piece: Piece, samePiece: Boolean = true): Queen = new Queen(
+    if (samePiece) piece.id else PieceId(),
+    QUEEN,
+    piece.team,
+    piece.hasMoved
+  )
 }

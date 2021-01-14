@@ -1,17 +1,15 @@
 package gamerunner
 
-import board.{BoardState, Coordinate, Space}
+import board.{BoardState, Space}
 import main.Viewer
 import piece.{King, Piece}
 import team.Team
 import team.Team.Team
-import turn.{Action, ActionManager, ActionResponder, InitiatingAction}
+import turn.InitiatingAction
 
 import scala.collection.mutable.ListBuffer
 
 class Referee(private var boardState: BoardState) {
-  private val actionManager: ActionManager = new ActionManager(List())
-
   /**
    * TODO: Behavior undefined when players.size > Team.values.size
    */
@@ -32,38 +30,16 @@ class Referee(private var boardState: BoardState) {
   }
 
   private def playTurn(boardState: BoardState, player: Player, playingTeam: Team): BoardState = {
-    val playerTurn: Action = player.takeTurn(boardState, playingTeam)
+    val playerTurn: InitiatingAction = player.takeTurn(boardState, playingTeam)
 
-    // Get all Effects
-    // val allActions = getAllActionsFromPlayerTurn(playerTurn)
-    val allActions = playerTurn :: actionManager.respondToAction(playerTurn, boardState)
+    // Update spaces based on IA
+    val newSpaces: Iterable[Space] = playerTurn.execute(boardState)
+      .getAllSpaces
+      .map(space => space.updateFromAction(playerTurn))
 
     /* TODO: Make sure move is valid */
 
-    // Apply all Effects
-    applyActions(allActions, boardState)
-  }
-
-  private def getAllActionsFromPlayerTurn(initiatingAction: Action): List[Action] = {
-    def getResponders(action: Action): List[ActionResponder] = {
-      // TODO: who is asked to respond to a particular action?
-      ???
-    }
-    def getResponseActions(action: Action): List[Action] = {
-      getResponders(action).flatMap(responder => responder.respondToAction(action))
-    }
-    def getAllActions(initiatorAction: Action): List[Action] = {
-      initiatorAction :: getResponseActions(initiatorAction).flatMap(nextInitiatorAction => getAllActions(nextInitiatorAction))
-    }
-    getAllActions(initiatingAction)
-  }
-
-  private def applyActions(allActions: List[Action], boardState: BoardState): BoardState = {
-    allActions
-      .sortBy(action => action.executionOrder)
-      .foldLeft(boardState)((board, action) => {
-        action.execute(board)
-      })
+    boardState.updateSpaces(newSpaces)
   }
 
   // TODO: This needs to be made more general / flexible
@@ -90,7 +66,7 @@ object Referee {
   def validMoves(boardState: BoardState, turn: Team): List[InitiatingAction] = {
     boardState.getAllSpaces
       .filter((space) => space.occupiers.exists(p => p.team.equals(turn)))
-      .foldLeft(ListBuffer[Action]())((acc, cur) => {
+      .foldLeft(ListBuffer[InitiatingAction]())((acc, cur) => {
         cur.occupiers.foreach(piece => {
           acc.addAll(piece.validMoves(cur.coordinate, boardState))
         })

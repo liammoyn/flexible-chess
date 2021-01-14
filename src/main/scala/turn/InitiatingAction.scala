@@ -1,7 +1,9 @@
 package turn
 
-import team.Team.Team
+import board.BoardState
+import piece.Piece
 
-trait InitiatingAction extends Action {
-//  val turn: Team // TODO: Maybe just put this for all actions??
+trait InitiatingAction {
+  def executor: Piece
+  def execute(boardState: BoardState): BoardState
 }

@@ -1,14 +1,15 @@
 package piece
 
 import board.{BoardState, Coordinate}
+import piece.PieceType.{BISHOP, PieceType}
 import team.Team.Team
-import turn.{Action, InitiatingAction}
-import turn.actions.Move
+import turn.InitiatingAction
+import turn.initiatingactions.Move
 import util.PieceId
 
 import scala.collection.mutable.ListBuffer
 
-class Bishop private (team: Team, hasMoved: Boolean, id: PieceId) extends Piece(id, team, hasMoved) {
+class Bishop private(id: PieceId, pieceType: PieceType, team: Team, hasMoved: Boolean) extends Piece(id, pieceType, team, hasMoved) {
 
   override def validMoves(at: Coordinate, currentBoard: BoardState): List[InitiatingAction] = {
     val leftUp: ListBuffer[Coordinate] = directionList(leftUpGen(at), leftUpGen, currentBoard)
@@ -21,12 +22,15 @@ class Bishop private (team: Team, hasMoved: Boolean, id: PieceId) extends Piece(
         Move(this, cord)
       })
   }
-
-  def move(): Bishop = {
-    new Bishop(this.team, true, this.id)
-  }
 }
 
 object Bishop {
-  def apply(team: Team): Bishop = new Bishop(team, false, PieceId())
+  def apply(team: Team): Bishop = new Bishop(PieceId(), BISHOP, team, false)
+
+  def apply(piece: Piece, samePiece: Boolean = true): Bishop = new Bishop(
+    if (samePiece) piece.id else PieceId(),
+    BISHOP,
+    piece.team,
+    piece.hasMoved
+  )
 }

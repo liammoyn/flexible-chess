@@ -1,13 +1,11 @@
 package gamerunner
-import java.io.InputStreamReader
-
 import board.{BoardState, Coordinate}
 import main.Viewer
 import team.Team.Team
-import turn.{Action, InitiatingAction}
-import turn.actions.Move
+import turn.InitiatingAction
+import turn.initiatingactions.Move
 
-import scala.io.{Source, StdIn}
+import scala.io.StdIn
 
 class HumanPlayer extends Player {
 
@@ -19,7 +17,8 @@ class HumanPlayer extends Player {
     val (colFS, rowFS, colTS, rowTS) = destructMoveString(moveString)
     val fromCoordinate = Coordinate(Viewer.rowMarkers.indexOf(rowFS), Viewer.colMarkers.indexOf(colFS))
     val toCoordinate = Coordinate(Viewer.rowMarkers.indexOf(rowTS), Viewer.colMarkers.indexOf(colTS))
-    Move(boardState.getPiece(fromCoordinate), toCoordinate)
+    val movingPiece = boardState.getPiece(fromCoordinate).get
+    Move(movingPiece, toCoordinate)
   }
 
   private def isValidMoveString(str: String): Boolean = {

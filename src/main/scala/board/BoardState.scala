@@ -4,7 +4,7 @@ import piece.Piece
 import team.Team.Team
 
 class BoardState(val rows: Int, val cols: Int, private val spaces: Map[Coordinate, Space]) {
-  private val pieces: Map[Piece, Coordinate] = this.spaces
+  val pieces: Map[Piece, Coordinate] = this.spaces
     .filterNot(cs => cs._2.occupiers.isEmpty)
     .foldLeft(Map.newBuilder[Piece, Coordinate])((acc, entry) => {
       acc.addAll(entry._2.occupiers.map(piece => (piece, entry._1)))
@@ -28,6 +28,11 @@ class BoardState(val rows: Int, val cols: Int, private val spaces: Map[Coordinat
   def isCoordinateValid(at: Coordinate): Boolean = spaces.contains(at)
   def isCoordinateEmpty(at: Coordinate): Boolean = spaces.get(at).exists(space => space.occupiers.isEmpty)
   def isEnemyAtCoordinate(at: Coordinate, friendlyTeam: Team): Boolean = spaces.get(at).exists(space => space.occupiers.exists(piece => piece.team != friendlyTeam))
+
+  // TODO: Probably add some team logic here?
+  def isAtEndOfBoard(coordinate: Coordinate): Boolean = {
+    coordinate.row == this.rows - 1 || coordinate.row == 0
+  }
 
   def print() {
     for ((k, v) <- spaces) {

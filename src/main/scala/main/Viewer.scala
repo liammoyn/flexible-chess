@@ -10,7 +10,7 @@ object Viewer {
 
   def getBoardString(boardState: BoardState): String = {
     val grid: List[List[Space]] = List
-      .tabulate(boardState.rows, boardState.cols)((row, col) => boardState.getSpace(Coordinate(row, col)))
+      .tabulate(boardState.rows, boardState.cols)((row, col) => boardState.getSpace(Coordinate(row, col)).get)
 
     val ans = new StringBuilder()
     ans.append("  +" + "-+".repeat(grid.head.length) + "\n")
