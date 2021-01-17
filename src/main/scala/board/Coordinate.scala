@@ -1,12 +1,12 @@
 package board
 
 case class Coordinate(row: Int, col: Int) {
-  def alongRow(rowOffset: Int): Coordinate = {
-    along(rowOffset, 0)
+  def alongRow(columnOffset: Int): Coordinate = {
+    along(0, columnOffset)
   }
 
-  def alongColumn(columnOffset: Int): Coordinate = {
-    along(0, columnOffset)
+  def alongColumn(rowOffset: Int): Coordinate = {
+    along(rowOffset, 0)
   }
 
   def along(rowOffset: Int, columnOffset: Int): Coordinate = {

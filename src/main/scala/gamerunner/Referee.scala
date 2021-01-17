@@ -7,8 +7,6 @@ import team.Team
 import team.Team.Team
 import turn.InitiatingAction
 
-import scala.collection.mutable.ListBuffer
-
 class Referee(private var boardState: BoardState) {
   /**
    * TODO: Behavior undefined when players.size > Team.values.size
@@ -64,14 +62,9 @@ class Referee(private var boardState: BoardState) {
 
 object Referee {
   def validMoves(boardState: BoardState, turn: Team): List[InitiatingAction] = {
-    boardState.getAllSpaces
-      .filter((space) => space.occupiers.exists(p => p.team.equals(turn)))
-      .foldLeft(ListBuffer[InitiatingAction]())((acc, cur) => {
-        cur.occupiers.foreach(piece => {
-          acc.addAll(piece.validMoves(cur.coordinate, boardState))
-        })
-        acc
-      })
+    boardState.pieces
+      .filter(_._1.team == turn)
+      .flatMap(pieceCoordinate => pieceCoordinate._1.validMoves(pieceCoordinate._2, boardState))
       .toList
   }
 }

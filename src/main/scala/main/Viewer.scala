@@ -13,6 +13,7 @@ object Viewer {
       .tabulate(boardState.rows, boardState.cols)((row, col) => boardState.getSpace(Coordinate(row, col)).get)
 
     val ans = new StringBuilder()
+    ans.append("\n")
     ans.append("  +" + "-+".repeat(grid.head.length) + "\n")
     for (i: Int <- grid.indices) {
       ans.append(s"${rowMarkers(i)} |")

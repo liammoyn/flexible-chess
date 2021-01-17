@@ -1,7 +1,7 @@
 package main
 
 import board.{BoardState, Coordinate, Space}
-import gamerunner.{ComputerPlayer, HumanPlayer, Referee}
+import gamerunner.{ComputerPlayer, HumanNotationPlayer, Referee}
 import piece.{Bishop, King, Knight, Pawn, Queen, Rook}
 import team.Team
 
@@ -10,7 +10,7 @@ import scala.collection.mutable
 object Main {
   def main(args: Array[String]): Unit = {
     val b: BoardState = basicBoard()
-    val players = List(new HumanPlayer(), new ComputerPlayer())
+    val players = List(new HumanNotationPlayer(), new ComputerPlayer())
     val referee = new Referee(b)
     print(referee.playGame(players))
   }
