@@ -6,7 +6,7 @@ import team.Team
 
 object Viewer {
   val rowMarkers: List[String] = List("8", "7", "6", "5", "4", "3", "2", "1")
-  val colMarkers: List[String] = List("A", "B", "C", "D", "E", "F", "G", "H")
+  val colMarkers: List[String] = List("a", "b", "c", "d", "e", "f", "g", "h")
 
   def getBoardString(boardState: BoardState): String = {
     val grid: List[List[Space]] = List

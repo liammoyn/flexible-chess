@@ -2,8 +2,13 @@ package board
 
 import piece.Piece
 import team.Team.Team
+import turn.{Effect, Trigger}
 
-class BoardState(val rows: Int, val cols: Int, private val spaces: Map[Coordinate, Space]) {
+class BoardState(val rows: Int,
+                 val cols: Int,
+                 private val spaces: Map[Coordinate, Space],
+                 private val triggers: Set[Trigger]) {
+
   val pieces: Map[Piece, Coordinate] = this.spaces
     .filterNot(cs => cs._2.occupiers.isEmpty)
     .foldLeft(Map.newBuilder[Piece, Coordinate])((acc, entry) => {
@@ -11,12 +16,30 @@ class BoardState(val rows: Int, val cols: Int, private val spaces: Map[Coordinat
     })
     .result()
 
+  val coordinateTriggers: Map[Coordinate, Iterable[Trigger]] = this.triggers
+    .flatMap(t => t.watchedCoordinates.map(i => (i, t)))
+    .groupMap(_._1)(_._2)
+
   def updateSpaces(updates: Iterable[Space]): BoardState = {
-    new BoardState(rows, cols, spaces ++ updates.map(space => (space.coordinate, space)))
+    new BoardState(rows, cols, spaces ++ updates.map(space => (space.coordinate, space)), ???)
   }
 
-  def updateSpace(space: Space): BoardState = {
-    new BoardState(rows, cols, spaces.+((space.coordinate, space)))
+  // TODO: Update triggers according to spaces?
+  def updateSpace(space: Space, cause: Effect): BoardState = {
+    val activatedTriggers: Iterable[Trigger] = coordinateTriggers(space.coordinate)
+    val updatedSpaceBoardState = new BoardState(rows, cols, spaces + ((space.coordinate, space)), triggers)
+
+    activatedTriggers.foldLeft(updatedSpaceBoardState)((triggerBoardState, trigger) =>
+      trigger.reaction(cause).foldLeft(triggerBoardState)((effectBoardState, effect) =>
+        effect.execute(effectBoardState))) // Can very easily go into infinite loop here
+  }
+
+  def addTrigger(trigger: Trigger): BoardState = {
+    new BoardState(rows, cols, spaces, triggers + trigger)
+  }
+
+  def removeTrigger(trigger: Trigger): BoardState = {
+    new BoardState(rows, cols, spaces, triggers - trigger)
   }
 
   def getAllSpaces: Iterable[Space] = this.spaces.values
@@ -42,5 +65,5 @@ class BoardState(val rows: Int, val cols: Int, private val spaces: Map[Coordinat
 }
 
 object BoardState {
-  def apply(rows: Int, cols: Int): BoardState = new BoardState(rows, cols, (for(i <- 0 to rows; j <- 0 to cols) yield (Coordinate(i, j), Space(Coordinate(i, j)))).toMap)
+  def apply(rows: Int, cols: Int): BoardState = new BoardState(rows, cols, (for(i <- 0 to rows; j <- 0 to cols) yield (Coordinate(i, j), Space(Coordinate(i, j)))).toMap, Set())
 }

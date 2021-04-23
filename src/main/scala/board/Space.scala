@@ -1,36 +1,27 @@
 package board
 
 import piece.Piece
-import turn.{InitiatingAction, SideEffect, Trigger}
 
-class Space private (val coordinate: Coordinate, val occupiers: List[Piece], val activeTriggers: List[Trigger]) {
+class Space private (val coordinate: Coordinate, val occupiers: List[Piece]) {
   def removePiece(piece: Piece): Space = {
-    this.createCopy(this.occupiers.filterNot(p => p.equals(piece)), this.activeTriggers)
+    this.createCopy(this.occupiers.filterNot(p => p.equals(piece)))
   }
 
   def addPiece(piece: Piece): Space = {
-    this.createCopy(piece :: this.occupiers, this.activeTriggers)
+    this.createCopy(piece :: this.occupiers)
   }
 
-  def removeTrigger(trigger: Trigger): Space = {
-    this.createCopy(this.occupiers, this.activeTriggers.filterNot(t => t.equals(trigger)))
-  }
+//  def updateFromAction(initiatingAction: InitiatingAction): Space = {
+//    val allEffects: List[SideEffect] = this.activeTriggers.flatMap(trigger => trigger.reaction(initiatingAction))
+//    // TODO: Undefined order of execution for effects
+//    allEffects.foldLeft(this)((space, sideEffect) => sideEffect.execute(space))
+//  }
 
-  def addTrigger(trigger: Trigger): Space = {
-    this.createCopy(this.occupiers, trigger :: this.activeTriggers)
-  }
-
-  def updateFromAction(initiatingAction: InitiatingAction): Space = {
-    val allEffects: List[SideEffect] = this.activeTriggers.flatMap(trigger => trigger.reaction(initiatingAction))
-    // TODO: Undefined order of execution for effects
-    allEffects.foldLeft(this)((space, sideEffect) => sideEffect.execute(space))
-  }
-
-  def createCopy(occupiers: List[Piece], activeTriggers: List[Trigger]): Space =
-    new Space(this.coordinate, occupiers, activeTriggers)
+  def createCopy(occupiers: List[Piece]): Space =
+    new Space(this.coordinate, occupiers)
 }
 
 object Space {
-  def apply(at: Coordinate): Space = new Space(at, List(), List())
-  def apply(at: Coordinate, piece: Piece): Space = new Space(at, List(piece), List())
+  def apply(at: Coordinate): Space = new Space(at, List())
+  def apply(at: Coordinate, piece: Piece): Space = new Space(at, List(piece))
 }

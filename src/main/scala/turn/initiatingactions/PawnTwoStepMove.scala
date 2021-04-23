@@ -3,21 +3,16 @@ package turn.initiatingactions
 import board.{BoardState, Coordinate}
 import piece.Pawn
 import team.Team
-import turn.InitiatingAction
+import turn.effects.AddTrigger
 import turn.triggers.EnPassantKill
+import turn.{Effect, InitiatingAction}
 
 case class PawnTwoStepMove(executor: Pawn) extends InitiatingAction {
-  override def execute(boardState: BoardState): BoardState = {
+  override def initiate(boardState: BoardState): List[Effect] = {
     val toCoordinate: Coordinate = boardState.pieces(executor).alongColumn(2 * Team.getDirection(executor.team))
-    val movedBoardState: BoardState = Move(executor, toCoordinate).execute(boardState)
 
-    val newPawnSpace = movedBoardState
-      .getSpace(executor)
-      .map(space => space.addTrigger(
-        EnPassantKill(space.coordinate.alongColumn(Team.getDirection(executor.team) * -1), executor)
-      ))
-      .get
+    val moveEffects: List[Effect] = Move(executor, toCoordinate).initiate(boardState)
 
-    movedBoardState.updateSpace(newPawnSpace)
+    moveEffects :+ AddTrigger(EnPassantKill(toCoordinate.alongColumn(Team.getDirection(executor.team) * -1), executor))
   }
 }

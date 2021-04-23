@@ -31,13 +31,12 @@ class Referee(private var boardState: BoardState) {
     val playerTurn: InitiatingAction = player.takeTurn(boardState, playingTeam)
 
     // Update spaces based on IA
-    val newSpaces: Iterable[Space] = playerTurn.execute(boardState)
-      .getAllSpaces
-      .map(space => space.updateFromAction(playerTurn))
+    val newBoardState: BoardState = playerTurn.initiate(boardState)
+      .foldLeft(boardState)((bs, effect) => effect.execute(bs))
 
     /* TODO: Make sure move is valid */
 
-    boardState.updateSpaces(newSpaces)
+    newBoardState
   }
 
   // TODO: This needs to be made more general / flexible
