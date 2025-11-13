@@ -10,8 +10,8 @@ class ComputerPlayer extends Player {
 
   private val rand = new Random()
 
-  override def takeTurn(boardState: BoardState, team: Team): InitiatingAction = {
-    val allPossibleMoves = Referee.validMoves(boardState, team)
+  override def takeTurn(gameState: GameState, team: Team): InitiatingAction = {
+    val allPossibleMoves = Referee.validMoves(gameState.boardState, team)
     allPossibleMoves(rand.between(0, allPossibleMoves.size))
   }
 

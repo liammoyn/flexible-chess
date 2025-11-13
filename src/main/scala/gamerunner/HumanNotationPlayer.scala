@@ -11,13 +11,13 @@ import scala.io.StdIn
 
 class HumanNotationPlayer extends Player {
 
-  override def takeTurn(boardState: BoardState, team: Team): InitiatingAction = {
+  override def takeTurn(gameState: GameState, team: Team): InitiatingAction = {
     val moveString = StdIn.readLine()
-    val maybeMove = getMoveFromString(moveString, boardState, team)
+    var maybeMove: Option[InitiatingAction] = getMoveFromString(moveString, gameState.boardState, team)
 
-    if (maybeMove.isEmpty) {
+    while (maybeMove.isEmpty) {
       System.out.println("Illegal move, play again")
-      takeTurn(boardState, team)
+      maybeMove = getMoveFromString(moveString, gameState.boardState, team)
     }
     maybeMove.get
   }

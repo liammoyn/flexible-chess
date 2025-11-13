@@ -5,5 +5,5 @@ import team.Team.Team
 import turn.InitiatingAction
 
 trait Player {
-  def takeTurn(boardState: BoardState, team: Team): InitiatingAction
+  def takeTurn(gameState: GameState, team: Team): InitiatingAction
 }

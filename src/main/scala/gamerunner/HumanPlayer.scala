@@ -9,7 +9,7 @@ import scala.io.StdIn
 
 class HumanPlayer extends Player {
 
-  override def takeTurn(boardState: BoardState, team: Team): InitiatingAction = {
+  override def takeTurn(gameState: GameState, team: Team): InitiatingAction = {
     var moveString = StdIn.readLine()
     while (!isValidMoveString(moveString)) {
       moveString = StdIn.readLine()
@@ -17,7 +17,7 @@ class HumanPlayer extends Player {
     val (colFS, rowFS, colTS, rowTS) = destructMoveString(moveString)
     val fromCoordinate = Coordinate(Viewer.rowMarkers.indexOf(rowFS), Viewer.colMarkers.indexOf(colFS))
     val toCoordinate = Coordinate(Viewer.rowMarkers.indexOf(rowTS), Viewer.colMarkers.indexOf(colTS))
-    val movingPiece = boardState.getPiece(fromCoordinate).get
+    val movingPiece = gameState.boardState.getPiece(fromCoordinate).get
     Move(movingPiece, toCoordinate)
   }
 

@@ -6,7 +6,7 @@ import piece.{Bishop, King, Knight, Pawn, Piece, Queen, Rook}
 import team.Team
 import team.Team.Team
 import turn.Effect
-import turn.effects.Place
+import turn.effects.AddPiece
 
 import scala.collection.mutable
 
@@ -25,15 +25,15 @@ object Main {
     val pieceOrder = (t: Team) => Seq(Rook(t), Knight(t), Bishop(t), King(t),
       Queen(t), Bishop(t), Knight(t), Rook(t))
 
-    val placeBlackPawns: Iterable[Effect] = for (col <- 0 to 7) yield Place(Pawn(Team.BLACK), Coordinate(1, col))
-    val placeWhitePawns: Iterable[Effect] = for (col <- 0 to 7) yield Place(Pawn(Team.WHITE), Coordinate(6, col))
+    val placeBlackPawns: Iterable[Effect] = for (col <- 0 to 7) yield AddPiece(Pawn(Team.BLACK), Coordinate(1, col))
+    val placeWhitePawns: Iterable[Effect] = for (col <- 0 to 7) yield AddPiece(Pawn(Team.WHITE), Coordinate(6, col))
     val placeBlackPieces: Iterable[Effect] = pieceOrder(Team.BLACK)
       .zipWithIndex
-      .map((pi) => Place(pi._1, Coordinate(0, pi._2)))
+      .map((pi) => AddPiece(pi._1, Coordinate(0, pi._2)))
     val placeWhitePieces: Iterable[Effect] = pieceOrder(Team.WHITE)
       .reverse
       .zipWithIndex
-      .map((pi) => Place(pi._1, Coordinate(7, pi._2)))
+      .map((pi) => AddPiece(pi._1, Coordinate(7, pi._2)))
 
     // TODO: Apply effects to board state
     ???

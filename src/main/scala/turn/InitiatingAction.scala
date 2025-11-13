@@ -1,10 +1,10 @@
 package turn
 
-import board.BoardState
+import gamerunner.GameState
 import piece.Piece
 
 trait InitiatingAction {
   def executor: Piece
 
-  def initiate(boardState: BoardState): List[Effect]
+  def initiate(gameState: GameState): List[Effect]
 }

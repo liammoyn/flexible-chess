@@ -2,23 +2,19 @@ package turn.triggers
 
 import board.Coordinate
 import piece.Pawn
-import turn.effects.{Kill, RemoveTrigger}
-import turn.initiatingactions.Move
-import turn.{Effect, InitiatingAction, Trigger}
+import turn.effects.{AddPiece, AdvanceTurn, RemovePiece, RemoveTrigger}
+import turn.{Effect, Trigger}
 
 case class EnPassantKill(killCoordinate: Coordinate, target: Pawn) extends Trigger {
-  override def watchedCoordinates: Iterable[Coordinate] = Seq(killCoordinate)
-
-  override def reaction(initiatingAction: InitiatingAction): List[Effect] = {
-    initiatingAction match {
-      case Move(executor, coordinate) if (coordinate == killCoordinate && executor.team != target.team) => {
-        List(Kill(Set(target)))
+  override def reaction(initiatingEffect: Effect): List[Effect] = {
+    initiatingEffect match {
+      case AddPiece(executor, coordinate) if (coordinate == killCoordinate && executor.team != target.team) => {
+        List(RemovePiece(target))
       }
-      case _ if initiatingAction.executor.team == target.team => {
+      case AdvanceTurn(nextTurn) if nextTurn == target.team => {
         List(RemoveTrigger(this))
       }
       case _ => List()
     }
   }
-
 }
